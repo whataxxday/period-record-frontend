@@ -88,7 +88,7 @@
     import dateformat from 'dateformat';
 
     // const BASE_URL = 'http://localhost:8888'
-    const BASE_URL = 'http://10.8.0.14:8888'
+    const BASE_URL = 'http://192.168.192.179:32771'
 
     export default {
         name: 'Main',

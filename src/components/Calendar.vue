@@ -183,16 +183,15 @@
              * 生成月份显示--经期
              */
             refresh_period_date() {
-                let start_dates = R.filter(i => i.is_start)(this.period_data)
-                let end_dates = R.filter(i => i.is_end)(this.period_data)
-
-                // console.log('start_dates',start_dates)
-                // console.log('end_dates',end_dates)
-
-                if (start_dates.length > end_dates.length) {
-                    if (start_dates[0] && end_dates[0] && new Date(start_dates[0].start_date).getDate() > new Date(end_dates[0].end_date).getDate()) {
-                        end_dates.unshift({
-                            id: start_dates[0].start_date,
+                let arr = R.filter(i => i.is_start || i.is_end)(this.period_data)
+                console.log('arr',arr)
+                console.log('arr[0].is_start',arr[0].is_start)
+                if(arr[0].is_start){
+                    console.log('arr.length % 2 === 0',arr.length % 2 === 0)
+                    if(arr.length % 2 !== 0){
+                        let month_last_day = last_day(arr[0].start_date)
+                        arr.push({
+                            id: dateformat(month_last_day,'yyyymmdd'),
                             temperature: null,
                             is_make_love: false,
                             is_record: true,
@@ -203,48 +202,16 @@
                             color_level: null,
                             state: [],
                             start_date: null,
-                            end_date: dateformat(last_day(start_dates[0].start_date),'yyyy-mm-dd'),
-                            extra: true // 因为结束日期数量和开始日期数量不相等，而额外补充的数据，加上这个extra字段
-                        })
-                    } else {
-                        end_dates.push({
-                            id: start_dates[0].start_date,
-                            temperature: null,
-                            is_make_love: false,
-                            is_record: true,
-                            is_start: false,
-                            is_end: true,
-                            pain_level: null,
-                            flow_level: null,
-                            color_level: null,
-                            state: [],
-                            start_date: null,
-                            end_date: dateformat(last_day(start_dates[0].start_date),'yyyy-mm-dd'),
+                            end_date: dateformat(month_last_day,'yyyy-mm-dd'),
                             extra: true // 因为结束日期数量和开始日期数量不相等，而额外补充的数据，加上这个extra字段
                         })
                     }
                 }else{
-                    start_dates.unshift({
-                        id: end_dates[0].end_date,
-                        temperature: null,
-                        is_make_love: false,
-                        is_record: true,
-                        is_start: true,
-                        is_end: false,
-                        pain_level: null,
-                        flow_level: null,
-                        color_level: null,
-                        state: [],
-                        start_date: dateformat(first_day(end_dates[0].end_date),'yyyy-mm-dd'),
-                        end_date: null,
-                        extra: true // 因为开始日期在上个月，而额外补充的数据，加上这个extra字段
-                    })
-                }
-
-                if (start_dates.length > 0 && end_dates.length > 0) {
-                    if (new Date(start_dates[0].start_date).getDate() > new Date(end_dates[0].end_date).getDate()) {
-                        start_dates.unshift({
-                            id: end_dates[0].end_date,
+                    console.log('arr.length % 2 === 0',arr.length % 2 === 0)
+                    if(arr.length % 2 === 0){
+                        let month_first_day = first_day(arr[0].end_date)
+                        arr.unshift({
+                            id: dateformat(month_first_day,'yyyymmdd'),
                             temperature: null,
                             is_make_love: false,
                             is_record: true,
@@ -254,17 +221,14 @@
                             flow_level: null,
                             color_level: null,
                             state: [],
-                            start_date: dateformat(first_day(end_dates[0].end_date),'yyyy-mm-dd'),
+                            start_date: dateformat(month_first_day,'yyyy-mm-dd'),
                             end_date: null,
-                            extra: true // 因为开始日期在上个月，而额外补充的数据，加上这个extra字段
+                            extra: true // 因为结束日期数量和开始日期数量不相等，而额外补充的数据，加上这个extra字段
                         })
-                    }
-                }
 
-                if (start_dates.length > end_dates.length) {
-                    if (new Date(start_dates[0].start_date).getDate() > new Date(end_dates[0].end_date).getDate()) {
-                        end_dates.unshift({
-                            id: start_dates[0].start_date,
+                        let month_last_day = last_day(arr[0].end_date)
+                        arr.push({
+                            id: dateformat(month_last_day,'yyyymmdd'),
                             temperature: null,
                             is_make_love: false,
                             is_record: true,
@@ -275,71 +239,73 @@
                             color_level: null,
                             state: [],
                             start_date: null,
-                            end_date: dateformat(last_day(start_dates[0].start_date),'yyyy-mm-dd'),
+                            end_date: dateformat(month_last_day,'yyyy-mm-dd'),
                             extra: true // 因为结束日期数量和开始日期数量不相等，而额外补充的数据，加上这个extra字段
                         })
-                    } else {
-                        end_dates.push({
-                            id: start_dates[0].start_date,
+                    }else{
+                        let month_first_day = first_day(arr[0].end_date)
+                        arr.unshift({
+                            id: dateformat(month_first_day,'yyyymmdd'),
                             temperature: null,
                             is_make_love: false,
                             is_record: true,
-                            is_start: false,
-                            is_end: true,
+                            is_start: true,
+                            is_end: false,
                             pain_level: null,
                             flow_level: null,
                             color_level: null,
                             state: [],
-                            start_date: null,
-                            end_date: dateformat(last_day(start_dates[0].start_date),'yyyy-mm-dd'),
+                            start_date: dateformat(month_first_day,'yyyy-mm-dd'),
+                            end_date: null,
                             extra: true // 因为结束日期数量和开始日期数量不相等，而额外补充的数据，加上这个extra字段
                         })
                     }
-
                 }
 
-                for (let i = 0; i < start_dates.length; i++) {
-                    let curr_start = start_dates[i]
-                    let curr_start_date = new Date(curr_start.start_date)
-                    let curr_start_day = curr_start_date.getDate()
+                for (let i = 0; i < arr.length; i++) {
+                    if(i % 2 === 0){ // 开始日期
+                        let curr_start = arr[i]
+                        let curr_start_date = new Date(curr_start.start_date)
+                        let curr_start_day = curr_start_date.getDate()
 
-                    let start_index = R.findIndex(R.propEq('day', curr_start_day))(this.cdates)
-                    if (start_index !== -1) {
-                        if (curr_start.extra) {
-                            this.cdates[start_index].day_class = 'lightred'
-                        } else {
-                            this.cdates[start_index].day_class = 'darkred'
+                        let start_index = R.findIndex(R.propEq('day', curr_start_day))(this.cdates)
+                        if (start_index !== -1) {
+                            if (curr_start.extra) {
+                                this.cdates[start_index].day_class = 'lightred'
+                            } else {
+                                this.cdates[start_index].day_class = 'darkred'
+                            }
+
+                            if (curr_start_day == this.my_day && this.my_year == curr_start_date.getFullYear() && this.my_month == curr_start_date.getMonth()) {
+                                this.cdates[start_index].day_class = 'darkred greenbox' //当天日期以绿色背景突出显示
+                            }
                         }
 
-                        if (curr_start_day == this.my_day && this.my_year == curr_start_date.getFullYear() && this.my_month == curr_start_date.getMonth()) {
-                            this.cdates[start_index].day_class = 'darkred greenbox' //当天日期以绿色背景突出显示
-                        }
-                    }
+                        let curr_end = arr[i + 1]
+                        let curr_end_date = new Date(curr_end.end_date)
+                        let curr_end_day = curr_end_date.getDate()
 
-                    let curr_end = end_dates[i]
-                    let curr_end_date = new Date(curr_end.end_date)
-                    let curr_end_day = curr_end_date.getDate()
-
-                    let end_index = R.findIndex(R.propEq('day', curr_end_day))(this.cdates)
-                    if (end_index !== -1) {
-                        if (curr_end.extra) {
-                            this.cdates[end_index].day_class = 'lightred'
-                        } else {
-                            this.cdates[end_index].day_class = 'darkred'
-                        }
-                        if (curr_end_day == this.my_day && this.my_year == curr_end_date.getFullYear() && this.my_month == curr_end_date.getMonth()) {
-                            this.cdates[end_index].day_class = 'darkred greenbox' //当天日期以绿色背景突出显示
-                        }
-                    }
-
-                    for (let k = curr_start_day + 1; k < curr_end_day; k++) {
-                        let curr_middle_index = R.findIndex(R.propEq('day', k))(this.cdates)
-                        if (curr_middle_index !== -1) {
-                            this.cdates[curr_middle_index].day_class = 'lightred'
+                        let end_index = R.findIndex(R.propEq('day', curr_end_day))(this.cdates)
+                        if (end_index !== -1) {
+                            if (curr_end.extra) {
+                                this.cdates[end_index].day_class = 'lightred'
+                            } else {
+                                this.cdates[end_index].day_class = 'darkred'
+                            }
+                            if (curr_end_day == this.my_day && this.my_year == curr_end_date.getFullYear() && this.my_month == curr_end_date.getMonth()) {
+                                this.cdates[end_index].day_class = 'darkred greenbox' //当天日期以绿色背景突出显示
+                            }
                         }
 
-                        if (k == this.my_day && this.my_year == curr_end_date.getFullYear() && this.my_month == curr_end_date.getMonth()) {
-                            this.cdates[curr_middle_index].day_class = 'lightred greenbox' //当天日期以绿色背景突出显示
+                        for (let k = curr_start_day + 1; k < curr_end_day; k++) {
+                            let curr_middle_index = R.findIndex(R.propEq('day', k))(this.cdates)
+                            if (curr_middle_index !== -1) {
+                                this.cdates[curr_middle_index].day_class = 'lightred'
+                            }
+
+                            if (k == this.my_day && this.my_year == curr_end_date.getFullYear() && this.my_month == curr_end_date.getMonth()) {
+                                this.cdates[curr_middle_index].day_class = 'lightred greenbox' //当天日期以绿色背景突出显示
+                            }
                         }
                     }
                 }
